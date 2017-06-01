@@ -15,6 +15,7 @@ import sys
 from maya import OpenMaya, OpenMayaMPx
 from murl import MURL
 
+
 _CACHE = {}
 
 
@@ -69,7 +70,3 @@ def uninitializePlugin(mobject):
     except:
         sys.stderr.write("Error removing")
         raise
-
-
-
-
