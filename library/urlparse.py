@@ -31,37 +31,41 @@ test_urlparse.py provides a good indicator of parsing behavior.
 import re
 from collections import namedtuple
 
-__all__ = ["urlparse", "urlunparse", "urljoin", "urldefrag",
-           "urlsplit", "urlunsplit", "parse_qs", "parse_qsl"]
+__all__ = [
+    "urlparse", "urlunparse", "urljoin", "urldefrag", "urlsplit", "urlunsplit", "parse_qs",
+    "parse_qsl"
+]
 
 # A classification of schemes ('' means apply by default)
-uses_relative = ['ftp', 'http', 'gopher', 'nntp', 'imap',
-                 'wais', 'file', 'https', 'shttp', 'mms',
-                 'prospero', 'rtsp', 'rtspu', '', 'sftp',
-                 'svn', 'svn+ssh']
-uses_netloc = ['ftp', 'http', 'gopher', 'nntp', 'telnet',
-               'imap', 'wais', 'file', 'mms', 'https', 'shttp',
-               'snews', 'prospero', 'rtsp', 'rtspu', 'rsync', '',
-               'svn', 'svn+ssh', 'sftp', 'nfs', 'git', 'git+ssh']
-uses_params = ['ftp', 'hdl', 'prospero', 'http', 'imap',
-               'https', 'shttp', 'rtsp', 'rtspu', 'sip', 'sips',
-               'mms', '', 'sftp', 'tel']
+uses_relative = [
+    'ftp', 'http', 'gopher', 'nntp', 'imap', 'wais', 'file', 'https', 'shttp', 'mms', 'prospero',
+    'rtsp', 'rtspu', '', 'sftp', 'svn', 'svn+ssh'
+]
+uses_netloc = [
+    'ftp', 'http', 'gopher', 'nntp', 'telnet', 'imap', 'wais', 'file', 'mms', 'https', 'shttp',
+    'snews', 'prospero', 'rtsp', 'rtspu', 'rsync', '', 'svn', 'svn+ssh', 'sftp', 'nfs', 'git',
+    'git+ssh'
+]
+uses_params = [
+    'ftp', 'hdl', 'prospero', 'http', 'imap', 'https', 'shttp', 'rtsp', 'rtspu', 'sip', 'sips',
+    'mms', '', 'sftp', 'tel'
+]
 
 # These are not actually used anymore, but should stay for backwards
 # compatibility.  (They are undocumented, but have a public-looking name.)
-non_hierarchical = ['gopher', 'hdl', 'mailto', 'news',
-                    'telnet', 'wais', 'imap', 'snews', 'sip', 'sips']
-uses_query = ['http', 'wais', 'imap', 'https', 'shttp', 'mms',
-              'gopher', 'rtsp', 'rtspu', 'sip', 'sips', '']
-uses_fragment = ['ftp', 'hdl', 'http', 'gopher', 'news',
-                 'nntp', 'wais', 'https', 'shttp', 'snews',
-                 'file', 'prospero', '']
+non_hierarchical = [
+    'gopher', 'hdl', 'mailto', 'news', 'telnet', 'wais', 'imap', 'snews', 'sip', 'sips'
+]
+uses_query = [
+    'http', 'wais', 'imap', 'https', 'shttp', 'mms', 'gopher', 'rtsp', 'rtspu', 'sip', 'sips', ''
+]
+uses_fragment = [
+    'ftp', 'hdl', 'http', 'gopher', 'news', 'nntp', 'wais', 'https', 'shttp', 'snews', 'file',
+    'prospero', ''
+]
 
 # Characters valid in scheme names
-scheme_chars = ('abcdefghijklmnopqrstuvwxyz'
-                'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                '0123456789'
-                '+-.')
+scheme_chars = ('abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' '0123456789' '+-.')
 
 MAX_CACHE_SIZE = 20
 _parse_cache = {}
@@ -125,7 +129,8 @@ class SplitResult(namedtuple('SplitResult', 'scheme netloc path query fragment')
         return urlunsplit(self)
 
 
-class ParseResult(namedtuple('ParseResult', 'scheme netloc path params query fragment'), ResultMixin):
+class ParseResult(namedtuple('ParseResult', 'scheme netloc path params query fragment'),
+                  ResultMixin):
     __slots__ = ()
 
     def geturl(self):
@@ -158,12 +163,12 @@ def _splitparams(url):
 
 
 def _splitnetloc(url, start=0):
-    delim = len(url)  # position of end of domain part of url, default is end
-    for c in '/?#':  # look for delimiters; the order is NOT important
-        wdelim = url.find(c, start)  # find first of this delim
-        if wdelim >= 0:  # if found
-            delim = min(delim, wdelim)  # use earliest delim position
-    return url[start:delim], url[delim:]  # return (domain, rest)
+    delim = len(url)    # position of end of domain part of url, default is end
+    for c in '/?#':    # look for delimiters; the order is NOT important
+        wdelim = url.find(c, start)    # find first of this delim
+        if wdelim >= 0:    # if found
+            delim = min(delim, wdelim)    # use earliest delim position
+    return url[start:delim], url[delim:]    # return (domain, rest)
 
 
 def urlsplit(url, scheme='', allow_fragments=True):
@@ -177,18 +182,17 @@ def urlsplit(url, scheme='', allow_fragments=True):
     cached = _parse_cache.get(key, None)
     if cached:
         return cached
-    if len(_parse_cache) >= MAX_CACHE_SIZE:  # avoid runaway growth
+    if len(_parse_cache) >= MAX_CACHE_SIZE:    # avoid runaway growth
         clear_cache()
     netloc = query = fragment = ''
     i = url.find(':')
     if i > 0:
-        if url[:i] == 'http':  # optimize the common case
+        if url[:i] == 'http':    # optimize the common case
             scheme = url[:i].lower()
             url = url[i + 1:]
             if url[:2] == '//':
                 netloc, url = _splitnetloc(url, 2)
-                if (('[' in netloc and ']' not in netloc) or
-                        (']' in netloc and '[' not in netloc)):
+                if (('[' in netloc and ']' not in netloc) or (']' in netloc and '[' not in netloc)):
                     raise ValueError("Invalid IPv6 URL")
             if allow_fragments and '#' in url:
                 url, fragment = url.split('#', 1)
@@ -210,8 +214,7 @@ def urlsplit(url, scheme='', allow_fragments=True):
 
     if url[:2] == '//':
         netloc, url = _splitnetloc(url, 2)
-        if (('[' in netloc and ']' not in netloc) or
-                (']' in netloc and '[' not in netloc)):
+        if (('[' in netloc and ']' not in netloc) or (']' in netloc and '[' not in netloc)):
             raise ValueError("Invalid IPv6 URL")
     if allow_fragments and '#' in url:
         url, fragment = url.split('#', 1)
@@ -268,19 +271,16 @@ def urljoin(base, url, allow_fragments=True):
         return url
     if scheme in uses_netloc:
         if netloc:
-            return urlunparse((scheme, netloc, path,
-                               params, query, fragment))
+            return urlunparse((scheme, netloc, path, params, query, fragment))
         netloc = bnetloc
     if path[:1] == '/':
-        return urlunparse((scheme, netloc, path,
-                           params, query, fragment))
+        return urlunparse((scheme, netloc, path, params, query, fragment))
     if not path and not params:
         path = bpath
         params = bparams
         if not query:
             query = bquery
-        return urlunparse((scheme, netloc, path,
-                           params, query, fragment))
+        return urlunparse((scheme, netloc, path, params, query, fragment))
     segments = bpath.split('/')[:-1] + path.split('/')
     # XXX The stuff below is bogus in various ways...
     if segments[-1] == '.':
@@ -301,8 +301,7 @@ def urljoin(base, url, allow_fragments=True):
         segments[-1] = ''
     elif len(segments) >= 2 and segments[-1] == '..':
         segments[-2:] = ['']
-    return urlunparse((scheme, netloc, '/'.join(segments),
-                       params, query, fragment))
+    return urlunparse((scheme, netloc, '/'.join(segments), params, query, fragment))
 
 
 def urldefrag(url):
@@ -323,11 +322,14 @@ def urldefrag(url):
 try:
     unicode
 except NameError:
+
     def _is_unicode(x):
         return 0
 else:
+
     def _is_unicode(x):
         return isinstance(x, unicode)
+
 
 # unquote method for parse_qs and parse_qsl
 # Cannot use directly from urllib as it would create a circular reference
@@ -335,8 +337,7 @@ else:
 # update it also in urllib.  This code duplication does not existin in Python3.
 
 _hexdig = '0123456789ABCDEFabcdef'
-_hextochr = dict((a + b, chr(int(a + b, 16)))
-                 for a in _hexdig for b in _hexdig)
+_hextochr = dict((a + b, chr(int(a + b, 16))) for a in _hexdig for b in _hexdig)
 _asciire = re.compile('([\x00-\x7f]+)')
 
 
@@ -423,7 +424,7 @@ def parse_qsl(qs, keep_blank_values=0, strict_parsing=0):
         nv = name_value.split('=', 1)
         if len(nv) != 2:
             if strict_parsing:
-                raise ValueError("bad query field: %r" % (name_value,))
+                raise ValueError("bad query field: %r" % (name_value, ))
             # Handle case of a control-name with no equal sign
             if keep_blank_values:
                 nv.append('')

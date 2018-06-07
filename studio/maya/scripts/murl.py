@@ -12,6 +12,7 @@
 #
 ###########################################################################################
 import re
+import maya.OpenMaya as OpenMaya
 from studiourl import StudioUrl
 
 
@@ -39,5 +40,8 @@ class MURL(StudioUrl):
             if hash_count < frame_count:
                 real_path = real_path.replace("#" * hash_count, self.frame)
             else:
-                real_path = real_path.replace("#" * hash_count, "0" * (hash_count - frame_count) + self.frame)
+                real_path = real_path.replace(
+                    "#" * hash_count, "0" * (hash_count - frame_count) + self.frame
+                )
+
         return real_path

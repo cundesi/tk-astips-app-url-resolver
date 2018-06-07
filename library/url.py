@@ -11,7 +11,6 @@
 # Description: studio url base class
 #
 ###########################################################################################
-
 """
 The normal url is:
 
@@ -30,8 +29,7 @@ e.g.
 
 """
 
-
-from . import urlparse as _urlparse
+import urlparse as _urlparse
 
 
 class URL(object):
@@ -40,6 +38,7 @@ class URL(object):
     To use it, you need give a url string. Then this class will split it automatic.
     You can get any part of the url string which you want.
     """
+
     def __init__(self, url):
         """
         Give a url string to init a URL object.
@@ -180,14 +179,24 @@ class URL(object):
         if "parse_result" not in self.result:
             _parse_result = _urlparse.urlparse(self.url)
             self.result["parse_result"] = {
-                "scheme": _parse_result.scheme,
-                "netloc": _parse_result.netloc,
-                "username": _parse_result.username,
-                "password": _parse_result.password,
-                "hostname": _parse_result.hostname.lower() if isinstance(_parse_result.hostname, basestring) else None,
-                "port": _parse_result.port,
-                "path": _parse_result.path,
-                "query": _urlparse.parse_qs(_parse_result.query),
-                "fragment": _parse_result.fragment
+                "scheme":
+                _parse_result.scheme,
+                "netloc":
+                _parse_result.netloc,
+                "username":
+                _parse_result.username,
+                "password":
+                _parse_result.password,
+                "hostname":
+                _parse_result.hostname.lower()
+                if isinstance(_parse_result.hostname, basestring) else None,
+                "port":
+                _parse_result.port,
+                "path":
+                _parse_result.path,
+                "query":
+                _urlparse.parse_qs(_parse_result.query),
+                "fragment":
+                _parse_result.fragment
             }
         return self.result["parse_result"]

@@ -15,7 +15,6 @@ import sys
 from maya import OpenMaya, OpenMayaMPx
 from murl import MURL
 
-
 _CACHE = {}
 
 
@@ -54,10 +53,9 @@ class MUrlResolver(OpenMayaMPx.MPxFileResolver):
 def initializePlugin(mobject):
     mplugin = OpenMayaMPx.MFnPlugin(mobject, "astips", "1.0")
     try:
-        mplugin.registerURIFileResolver(MUrlResolver.fileResolverName,
-                                        MUrlResolver.uriSchemeName,
-                                        MUrlResolver.resolverCreator
-                                        )
+        mplugin.registerURIFileResolver(
+            MUrlResolver.fileResolverName, MUrlResolver.uriSchemeName, MUrlResolver.resolverCreator
+        )
     except:
         sys.stderr.write("Error loading")
         raise

@@ -12,7 +12,9 @@
 #              - modify this file to meet your studio's requirements
 #
 ###########################################################################################
-from .url import URL as _URL
+import os
+
+from url import URL as _URL
 
 
 class StudioUrl(_URL):
@@ -23,35 +25,52 @@ class StudioUrl(_URL):
     You can get them, if they are valid.
     """
 
+    def __init__(self, url):
+        super(StudioUrl, self).__init__(url)
+        self._extend_parse = None
+
+    @property
     def extend_parse(self):
         """
         do parse url to get more informations what you need.
         """
-        pass
+        if not self._extend_parse:
+            self._extend_parse = self.query
+        return self._extend_parse
 
     @property
     def entity(self):
         """
         """
-        return self.result["entity"]
+        return self.extend_parse.get("entity", None)
 
     @property
     def asset(self):
         """
         """
-        return self.result["asset"]
+        return self.extend_parse.get("asset", None)
 
     @property
     def version(self):
         """
         """
-        return self.result["version"]
+        return self.extend_parse.get("version", None)
+
+    @property
+    def project(self):
+        return self.extend_parse.get("project", None)
 
     @property
     def real_path(self):
         """
         """
-        return self.result["real_path"]
+        real_path = []
+        if self.project:
+            real_path += ['${project}'.format(project=self.project[0])]
+
+        real_path += [self.path]
+        abs_path = os.path.expandvars(''.join(real_path))
+        return abs_path
 
     @property
     def real_paths(self):
